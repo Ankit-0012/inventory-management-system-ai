@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Sales Analytics</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="container mt-4">
+
+<div class="d-flex align-items-center justify-content-between">
+<h2 class="mb-0">Monthly Sales Analytics</h2>
+<a href="/dashboard" class="btn btn-secondary btn-sm">Back</a>
+</div>
+<div class="d-flex justify-content-end mt-2">
+<form method="get" class="mb-0 d-flex align-items-center">
+<label class="me-2 text-muted mb-0">Daily window:</label>
+<select name="daily_days" class="form-select d-inline w-auto" onchange="this.form.submit()">
+<option value="7" {% if daily_days == 7 %}selected{% endif %}>Last 7 days</option>
+<option value="14" {% if daily_days == 14 %}selected{% endif %}>Last 14 days</option>
+<option value="30" {% if daily_days == 30 %}selected{% endif %}>Last 30 days</option>
+</select>
+</form>
+</div>
+
+<div class="row mt-4">
+
+<div class="col-md-4">
+<div class="card border-success mb-3">
+<div class="card-body">
+<h6 class="card-subtitle mb-2 text-muted">Last Month</h6>
+<h3>{{ last_month_sales }}</h3>
+</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card border-info mb-3">
+<div class="card-body">
+<h6 class="card-subtitle mb-2 text-muted">MoM Change</h6>
+<h3>{{ "+" if mom_change>0 else "" }}{{ mom_change }}</h3>
+<p class="mb-0 text-muted">{{ mom_pct_display }}</p>
+</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card border-primary mb-3">
+<div class="card-body">
+<h6 class="card-subtitle mb-2 text-muted">Total Sales</h6>
+<h3>{{ total_sales }}</h3>
+</div>
+</div>
+</div>
+
+</div>
+
+<h4 class="mt-4">Daily Sales (Last {{ daily_days }} Days)</h4>
+<canvas id="dailyChart" height="120"></canvas>
+
+<h4 class="mt-4">Monthly Sales</h4>
+<canvas id="salesChart"></canvas>
+
+<hr>
+
+<h4 class="mt-4">Top Selling Products</h4>
+
+<table class="table table-striped">
+<thead>
+<tr>
+<th class="text-start">Product</th>
+<th>Total Sold</th>
+</tr>
+</thead>
+<tbody>
+
+{% for product in top_products %}
+<tr>
+<td class="text-start">{{ product[0] }}</td>
+<td>{{ product[1] }}</td>
+</tr>
+{% else %}
+<tr>
+<td colspan="2">No sales yet</td>
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+</div>
+
+<script>
+
+const dailyCtx=document.getElementById("dailyChart")
+new Chart(dailyCtx,{
+type:"bar",
+data:{
+labels:{{ daily_labels | safe }},
+datasets:[{
+label:"Daily Sales",
+data:{{ daily_totals | safe }},
+backgroundColor:"#4e73df"
+}]
+},
+options:{
+responsive:true,
+scales:{
+y:{
+beginAtZero:true
+}
+}
+}
+})
+
+const monthlyCtx=document.getElementById("salesChart")
+new Chart(monthlyCtx,{
+type:"bar",
+data:{
+labels:{{ months | safe }},
+datasets:[{
+label:"Monthly Sales",
+data:{{ totals | safe }},
+backgroundColor:"green"
+}]
+},
+options:{
+responsive:true,
+scales:{
+y:{
+beginAtZero:true
+}
+}
+}
+})
+
+</script>
+
+</body>
+</html>
