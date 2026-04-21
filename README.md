@@ -1,3 +1,14 @@
+#ID/PASS
+----Admin----
+User name = Admin
+Password = admin123
+
+----Staff----
+User name = staff
+Password = 123456
+
+
+
 # Inventory Management System with AI Forecasting
 
 This project is a web-based inventory management system developed using Flask, SQLite, and Machine Learning.
